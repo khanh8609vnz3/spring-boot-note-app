@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,8 @@ public class NoteController {
 	@Autowired
 	NoteRepository noteRepository;
 
+	private static final Logger log = LoggerFactory.getLogger(NoteController.class);
+
 	// Get all note
 	@GetMapping("/notes")
 	public ResponseEntity<List<Note>> getAllNote(@RequestParam(value = "name", required = false) String name,
@@ -41,6 +45,12 @@ public class NoteController {
 		} else {
 			notes = noteRepository.findAll();
 		}
+		log.info("Search result");
+		log.info("-------------------------------");
+		for (Note oneNote : notes) {
+			log.info("id: " + oneNote.getId() + ", name: " + oneNote.getName());
+		}
+
 		return new ResponseEntity<>(notes, HttpStatus.OK);
 	}
 
