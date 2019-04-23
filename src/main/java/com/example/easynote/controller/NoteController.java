@@ -30,9 +30,9 @@ public class NoteController {
 	@Autowired
 	NoteRepository noteRepository;
 
-	// Test data
+	// Get all note
 	@GetMapping("/notes")
-	public ResponseEntity<List<Note>> getAllTestData(@RequestParam(value = "name", required = false) String name,
+	public ResponseEntity<List<Note>> getAllNote(@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "id", required = false) Long id) {
 		List<Note> notes = new ArrayList<>();
 		if (name != null || id != null) {
@@ -44,30 +44,18 @@ public class NoteController {
 		return new ResponseEntity<>(notes, HttpStatus.OK);
 	}
 
-	// Test data
-	@GetMapping("/notes/{testId}")
-	public ResponseEntity<Optional<Note>> getOneTestData(@PathVariable("testId") Long testId) {
-		Optional<Note> notes = noteRepository.findById(testId);
+	// Get one note
+	@GetMapping("/notes/{noteId}")
+	public ResponseEntity<Optional<Note>> getOneNotes(@PathVariable("noteId") Long noteId) {
+		Optional<Note> notes = noteRepository.findById(noteId);
 		return new ResponseEntity<>(notes, HttpStatus.OK);
 	}
-
-	// Get All Notes
-//	@GetMapping("/notes")
-//	public List<Note> getAllNotes() {
-//		return noteRepository.findAll();
-//	}
 
 	// Create a new Note
 	@PostMapping("/notes")
 	public Note createNote(@Valid @RequestBody Note note) {
 		return noteRepository.save(note);
 	}
-
-	// Get a Single Note
-//	@GetMapping("/notes/{id}")
-//	public Note getNoteById(@PathVariable(value = "id") Long noteId) {
-//		return noteRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
-//	}
 
 	// Update a Note
 	@PutMapping("/notes/{id}")
@@ -78,8 +66,8 @@ public class NoteController {
 
 		note.setName(noteDetails.getName());
 
-		Note updatedNote = noteRepository.save(note);
-		return updatedNote;
+		return noteRepository.save(note);
+
 	}
 
 	// Delete a Note
