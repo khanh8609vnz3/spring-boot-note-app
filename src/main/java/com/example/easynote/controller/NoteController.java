@@ -1,5 +1,6 @@
 package com.example.easynote.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.easynote.exception.ResourceNotFoundException;
@@ -29,24 +31,31 @@ public class NoteController {
 	NoteRepository noteRepository;
 
 	// Test data
-	@GetMapping("/test-data")
-	public ResponseEntity<List<Note>> getAllTestData() {
-		List<Note> notes = noteRepository.findAll();
+	@GetMapping("/notes")
+	public ResponseEntity<List<Note>> getAllTestData(@RequestParam(value = "name", required = false) String name,
+			@RequestParam(value = "id", required = false) Long id) {
+		List<Note> notes = new ArrayList<>();
+		if (name != null || id != null) {
+			notes = noteRepository.findAllNotesWithParams(name, id);
+//			notes = noteRepository.findAllByNameAndId(name, id);
+		} else {
+			notes = noteRepository.findAll();
+		}
 		return new ResponseEntity<>(notes, HttpStatus.OK);
 	}
 
 	// Test data
-	@GetMapping("/test-data/{testId}")
+	@GetMapping("/notes/{testId}")
 	public ResponseEntity<Optional<Note>> getOneTestData(@PathVariable("testId") Long testId) {
 		Optional<Note> notes = noteRepository.findById(testId);
 		return new ResponseEntity<>(notes, HttpStatus.OK);
 	}
 
 	// Get All Notes
-	@GetMapping("/notes")
-	public List<Note> getAllNotes() {
-		return noteRepository.findAll();
-	}
+//	@GetMapping("/notes")
+//	public List<Note> getAllNotes() {
+//		return noteRepository.findAll();
+//	}
 
 	// Create a new Note
 	@PostMapping("/notes")
@@ -55,10 +64,10 @@ public class NoteController {
 	}
 
 	// Get a Single Note
-	@GetMapping("/notes/{id}")
-	public Note getNoteById(@PathVariable(value = "id") Long noteId) {
-		return noteRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
-	}
+//	@GetMapping("/notes/{id}")
+//	public Note getNoteById(@PathVariable(value = "id") Long noteId) {
+//		return noteRepository.findById(noteId).orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
+//	}
 
 	// Update a Note
 	@PutMapping("/notes/{id}")
