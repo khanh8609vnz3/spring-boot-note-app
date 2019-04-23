@@ -1,13 +1,25 @@
 package com.example.easynote.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.easynote.exception.ResourceNotFoundException;
 import com.example.easynote.model.Note;
 import com.example.easynote.repository.NoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -15,6 +27,20 @@ public class NoteController {
 
 	@Autowired
 	NoteRepository noteRepository;
+
+	// Test data
+	@GetMapping("/test-data")
+	public ResponseEntity<List<Note>> getAllTestData() {
+		List<Note> notes = noteRepository.findAll();
+		return new ResponseEntity<>(notes, HttpStatus.OK);
+	}
+
+	// Test data
+	@GetMapping("/test-data/{testId}")
+	public ResponseEntity<Optional<Note>> getOneTestData(@PathVariable("testId") Long testId) {
+		Optional<Note> notes = noteRepository.findById(testId);
+		return new ResponseEntity<>(notes, HttpStatus.OK);
+	}
 
 	// Get All Notes
 	@GetMapping("/notes")
