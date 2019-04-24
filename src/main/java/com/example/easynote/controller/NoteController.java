@@ -2,7 +2,6 @@ package com.example.easynote.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -37,18 +36,15 @@ public class NoteController {
 	// Get all note
 	@GetMapping("/notes")
 	public ResponseEntity<List<Note>> getAllNote(@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "id", required = false) Long id) {
+			@RequestParam(value = "id", required = false) Long id,
+			@RequestParam(value = "groupId", required = false) Long groupId,
+			@RequestParam(value = "groupName", required = false) String groupName) {
 		List<Note> notes = new ArrayList<>();
-		if (name != null || id != null) {
-			notes = noteRepository.findAllNotesWithParams(name, id);
+		if (name != null || id != null || groupId != null || groupName != null) {
+			notes = noteRepository.findAllNotesWithParams(name, id, groupId, groupName);
 //			notes = noteRepository.findAllByNameAndId(name, id);
 		} else {
 			notes = noteRepository.findAll();
-		}
-		log.info("Search result");
-		log.info("-------------------------------");
-		for (Note oneNote : notes) {
-			log.info("id: " + oneNote.getId() + ", name: " + oneNote.getName());
 		}
 
 		return new ResponseEntity<>(notes, HttpStatus.OK);
@@ -56,25 +52,27 @@ public class NoteController {
 
 	// Get one note
 	@GetMapping("/notes/{noteId}")
-	public ResponseEntity<Optional<Note>> getOneNotes(@PathVariable("noteId") Long noteId) {
-		Optional<Note> notes = noteRepository.findById(noteId);
-		return new ResponseEntity<>(notes, HttpStatus.OK);
+	public ResponseEntity<Note> getOneNotes(@PathVariable("noteId") Long noteId) {
+		Note oneNote = noteRepository.findById(noteId).orElse(new Note());
+		return new ResponseEntity<>(oneNote, HttpStatus.OK);
 	}
 
 	// Create a new Note
 	@PostMapping("/notes")
-	public Note createNote(@Valid @RequestBody Note note) {
-		return noteRepository.save(note);
+	public ResponseEntity<Note> createNote(@Valid @RequestBody Note note) {
+		noteRepository.save(note);
+		Note oneNote = noteRepository.findById(note.getId()).orElse(new Note());
+		log.info("Group id: " + note.getId());
+		log.info("Group name: " + oneNote.getGroup().getData());
+		return new ResponseEntity<>(oneNote, HttpStatus.OK);
 	}
 
 	// Update a Note
 	@PutMapping("/notes/{id}")
 	public Note updateNote(@PathVariable(value = "id") Long noteId, @Valid @RequestBody Note noteDetails) {
-
-		Note note = noteRepository.findById(noteId)
-				.orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
-
+		Note note = noteRepository.findById(noteId).orElse(new Note());
 		note.setName(noteDetails.getName());
+		note.setGroup(noteDetails.getGroup());
 
 		return noteRepository.save(note);
 

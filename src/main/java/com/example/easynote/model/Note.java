@@ -9,6 +9,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,6 +43,10 @@ public class Note implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 
+	@ManyToOne
+	@JoinColumn(name = "group_id")
+	private Group group;
+
 	public Long getId() {
 		return id;
 	}
@@ -71,5 +77,13 @@ public class Note implements Serializable {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
 	}
 }
