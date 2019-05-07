@@ -35,6 +35,13 @@ public class NoteController {
 
 	private static final Logger log = LoggerFactory.getLogger(NoteController.class);
 
+	// Say hello
+	@GetMapping("/hello/{id}")
+	public Note sayHello(@PathVariable("id") Long id) {
+		Note note = noteRepository.findNoteById(id);
+		return note;
+	}
+
 	// Get all note
 	@GetMapping("/notes")
 	public ResponseEntity<List<Note>> getAllNote(@RequestParam(value = "name", required = false) String name,
@@ -55,7 +62,7 @@ public class NoteController {
 	// Get one note
 	@GetMapping("/notes/{noteId}")
 	public ResponseEntity<Note> getOneNotes(@PathVariable("noteId") Long noteId) {
-		Note oneNote = noteRepository.findById(noteId).orElse(new Note());
+		Note oneNote = noteRepository.findNoteById(noteId);
 		return new ResponseEntity<>(oneNote, HttpStatus.OK);
 	}
 
@@ -63,16 +70,17 @@ public class NoteController {
 	@PostMapping("/notes")
 	public ResponseEntity<Note> createNote(@Valid @RequestBody Note note) {
 		noteRepository.save(note);
-		Note oneNote = noteRepository.findById(note.getId()).orElse(new Note());
-		log.info("Group id: " + note.getId());
-		log.info("Group name: " + oneNote.getGroup().getData());
+		Note oneNote = noteRepository.findNoteById(note.getId());
+
+//		noteRepository.insertNote(note.getName(), note.getGroup().getGroupId());
+
 		return new ResponseEntity<>(oneNote, HttpStatus.OK);
 	}
 
 	// Update a Note
 	@PutMapping("/notes/{id}")
 	public Note updateNote(@PathVariable(value = "id") Long noteId, @Valid @RequestBody Note noteDetails) {
-		Note note = noteRepository.findById(noteId).orElse(new Note());
+		Note note = noteRepository.findNoteById(noteId);
 		note.setName(noteDetails.getName());
 		note.setGroup(noteDetails.getGroup());
 
